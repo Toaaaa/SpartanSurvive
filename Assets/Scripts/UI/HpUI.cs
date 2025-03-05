@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+
 
 public class HpUI : MonoBehaviour
 {
@@ -17,6 +19,6 @@ public class HpUI : MonoBehaviour
 
     void OnHpChanged(float n)
     {
-        
+        slider.gameObject.GetComponent<RectTransform>().DOShakeAnchorPos(0.1f, 10, 90, 90, false, true);// 체력 변경시 흔들리는 애니메이션
     }
 }
