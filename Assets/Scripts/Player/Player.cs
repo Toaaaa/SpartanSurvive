@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour, IDamageable
 {
@@ -38,6 +39,11 @@ public class Player : MonoBehaviour, IDamageable
 
 
     public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
+
+    private void Update()
+    {
+        GetComponent<PlayerInput>().enabled = !isDead;// 죽으면 플레이어 입력 비활성화.
+    }
 
     public void TakeDamage(float damage)// damage 수치 만큼 체력 감소.
     {
