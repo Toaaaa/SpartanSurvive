@@ -40,3 +40,9 @@ public class GameManager : MonoBehaviour
 
     }
 }
+
+// public 인터페이스
+public interface IDamageable
+{
+    void TakeDamage(float damage);
+}

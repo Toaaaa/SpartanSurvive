@@ -1,8 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageable
 {
     [SerializeField] private bool isDead = false;// 죽었는지 여부
     public bool IsDead
@@ -36,10 +37,12 @@ public class Player : MonoBehaviour
     }
 
 
+    public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
 
     public void TakeDamage(float damage)// damage 수치 만큼 체력 감소.
     {
         hp -= damage;
+        onTakeDamage?.Invoke();// 데미지를 받았을 때 이벤트 발생.
         isDead = hp <= 0;// 체력이 0 이하면 죽음.
     }
     public void Heal(float heal)// heal 수치 만큼 체력 회복
