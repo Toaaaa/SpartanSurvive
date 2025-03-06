@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour, IDamageable
 {
+    [Header("Player Status")]
     [SerializeField] private bool isDead = false;// 죽었는지 여부
     public bool IsDead
     {
@@ -20,6 +21,8 @@ public class Player : MonoBehaviour, IDamageable
         get => _hp;
         private set => _hp = Mathf.Clamp(value, 0, maxHp); // 체력의 상한치를 maxHp로 제한.
     }
+
+    [Header("Player Buffs")]
     //더블 점프 버프
     [SerializeField] private bool _isDoubleJump = false;// 더블 점프 버프 적용 여부.
     [SerializeField] private float _doubleJumpBuffTime = 5f;// 더블 점프 버프 지속 시간.
