@@ -61,6 +61,14 @@ public class Player : MonoBehaviour
     {
         return maxHp;
     }
+    public float GetDoubleJumpBuffTime()
+    {
+        return _doubleJumpBuffTime;
+    }
+    public float GetDefenceBuffTime()
+    {
+        return _defenceBuffTime;
+    }
 
     IEnumerator DoubleJumpBuffOff(float time)// 더블 점프 버프 해제
     {

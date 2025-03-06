@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    [SerializeField] Player player;
+    public Player player;
 
 
 
