@@ -55,10 +55,13 @@ public class Player : MonoBehaviour, IDamageable
     public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
 
     private ThirdPersonController _thirdPersonController;
+    private Animator _animator;
+    public bool isClimbingorAttacking = false;
 
     private void Awake()
     {
         _thirdPersonController = GetComponent<ThirdPersonController>();
+        _animator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -66,6 +69,7 @@ public class Player : MonoBehaviour, IDamageable
         GetComponent<PlayerInput>().enabled = !isDead; // 죽으면 플레이어 입력 비활성화.
         if(Input.GetKeyDown(KeyCode.G) && _weapon != null) UnEquipWeapon(); // 장착중인 무기 해제.
         _thirdPersonController._DoubleJumpPossible = isDoubleJump;// 더블 점프 버프 적용 여부에 따라 더블 점프 가능 여부 변경.
+        _animator.SetBool("HasWeapon", !_weapon.IsUnityNull());// 무기 장착 여부에 따라 애니메이션 변경.
     }
 
     // 수치 조정

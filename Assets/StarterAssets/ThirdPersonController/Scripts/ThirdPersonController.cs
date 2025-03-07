@@ -39,9 +39,6 @@ namespace StarterAssets
         [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
         public float Gravity = -15.0f;
 
-        public bool _DoubleJumpPossible;
-        public int _JumpCount = 0;
-
         [Space(10)]
         [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
         public float JumpTimeout = 0.10f;
@@ -78,6 +75,11 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+        [Header("Custom Variable")]
+        public bool _DoubleJumpPossible;
+        public int _JumpCount = 0;
+        Player player;
+
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -100,6 +102,8 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+        private int _animIDAttack;
+        private int _animClimb;
 
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
@@ -133,6 +137,7 @@ namespace StarterAssets
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
+            player = GetComponent<Player>();
         }
 
         private void Start()
@@ -162,6 +167,7 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+            Attack();
         }
 
         private void LateUpdate()
@@ -176,6 +182,8 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDAttack = Animator.StringToHash("Attack");
+            _animClimb = Animator.StringToHash("Climb");
         }
 
         private void GroundedCheck()
@@ -216,6 +224,8 @@ namespace StarterAssets
 
         private void Move()
         {
+            if (player.isClimbingorAttacking) return;// 공격중이거나 벽타기중이면 움직이지 않음.
+
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
@@ -372,6 +382,31 @@ namespace StarterAssets
                 _verticalVelocity += Gravity * Time.deltaTime;
             }
         }
+        private void Attack()
+        {
+            if (_input.attack&&Grounded)
+            {
+                if (_hasAnimator)
+                {
+                    _animator.SetTrigger(_animIDAttack);
+                    player.isClimbingorAttacking = true;
+                    _input.attack = false;
+                }
+            }
+            if(_input.attack &&!Grounded)
+            {
+                _input.attack = false;
+            }
+        }
+        private void Climb()
+        {
+            if(_hasAnimator)
+            {
+                _animator.SetTrigger(_animClimb);
+                player.isClimbingorAttacking = true;
+            }
+        }
+
 
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
