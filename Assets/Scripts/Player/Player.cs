@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour, IDamageable
 {
-    [Header("Player Status")]
+        [Header("Player Status")]
     [SerializeField] private bool isDead = false;// 죽었는지 여부
     public bool IsDead
     {
@@ -22,8 +22,15 @@ public class Player : MonoBehaviour, IDamageable
         get => _hp;
         private set => _hp = Mathf.Clamp(value, 0, maxHp); // 체력의 상한치를 maxHp로 제한.
     }
+    //공격력
+    [SerializeField] private float _attackPower = 1;// 공격력
+    public float attackPower
+    {
+        get => _attackPower;
+        set => _attackPower = value;
+    }
 
-    [Header("Player Buffs")]
+        [Header("Player Buffs")]
     //더블 점프 버프
     [SerializeField] private bool _isDoubleJump = false;// 더블 점프 버프 적용 여부.
     [SerializeField] private float _doubleJumpBuffTime = 5f;// 더블 점프 버프 지속 시간.
@@ -41,7 +48,7 @@ public class Player : MonoBehaviour, IDamageable
         set => _isDefence = value;
     }
 
-    [Header("EquipItem")]
+        [Header("EquipItem")]
     [SerializeField] private ItemData _weapon;// 장착한 무기
 
     public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
@@ -96,9 +103,15 @@ public class Player : MonoBehaviour, IDamageable
         {
             UnEquipWeapon();
             _weapon = w;// 새로운 무기 장착
+            EquipmentItme e = w as EquipmentItme;
+            attackPower += e.itemValue;// 공격력 증가
         }
         else
+        {
             _weapon = w;// 무기 장착
+            EquipmentItme e = w as EquipmentItme;
+            attackPower += e.itemValue;// 공격력 증가
+        }
 
         //Destroy(w.gameObject);// destroy는 레이캐스팅에서 상호작용시 처리하도록 할것.
 
@@ -106,6 +119,8 @@ public class Player : MonoBehaviour, IDamageable
     public void UnEquipWeapon()
     {
         Instantiate(_weapon.prefab, new Vector3(transform.position.x, 1, transform.position.z), Quaternion.identity);// 무기 프리팹 생성
+        EquipmentItme e = _weapon as EquipmentItme;
+        attackPower -= e.itemValue;// 공격력 감소
         _weapon = null;
     }
 
