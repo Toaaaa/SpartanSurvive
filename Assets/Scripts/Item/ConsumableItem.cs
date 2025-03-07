@@ -9,6 +9,6 @@ public class ConsumableItem : ItemData
 
     public override void Use(Player player)
     {
-        
+        player.Heal(healAmount);
     }
 }
