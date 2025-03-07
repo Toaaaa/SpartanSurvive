@@ -68,6 +68,7 @@ public class Player : MonoBehaviour, IDamageable
     private void Update()
     {
         GetComponent<PlayerInput>().enabled = !isDead; // 죽으면 플레이어 입력 비활성화.
+        _animator.SetBool("Dead", isDead);// 죽었는지 여부에 따라 애니메이션 변경.
         if(Input.GetKeyDown(KeyCode.G) && _weapon != null) UnEquipWeapon(); // 장착중인 무기 해제.
         _thirdPersonController._DoubleJumpPossible = isDoubleJump;// 더블 점프 버프 적용 여부에 따라 더블 점프 가능 여부 변경.
         _animator.SetBool("HasWeapon", !_weapon.IsUnityNull());// 무기 장착 여부에 따라 애니메이션 변경.
@@ -76,7 +77,7 @@ public class Player : MonoBehaviour, IDamageable
     // 수치 조정
     public void TakeDamage(float damage)// damage 수치 만큼 체력 감소.
     {
-        if (isDefence) return;// 방어 버프가 활성화 되어있으면 데미지를 받지 않음.
+        if (isDefence||IsDead) return;// 방어 버프가 활성화 or 사망 되어있으면 데미지를 받지 않음.
         hp -= damage;
         onTakeDamage?.Invoke();// 데미지를 받았을 때 이벤트 발생.
         isDead = hp <= 0;// 체력이 0 이하면 죽음.

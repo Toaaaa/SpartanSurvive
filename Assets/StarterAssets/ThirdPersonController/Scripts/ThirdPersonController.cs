@@ -163,11 +163,13 @@ namespace StarterAssets
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
-
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
-            Attack();
+            if (!player.IsDead)// 죽었을때는 행동을 하지 못함.
+            {
+                JumpAndGravity();
+                GroundedCheck();
+                Move();
+                Attack();
+            }
         }
 
         private void LateUpdate()
