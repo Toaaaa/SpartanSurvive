@@ -1,3 +1,4 @@
+using StarterAssets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ public class Player : MonoBehaviour, IDamageable
         [Header("Player Buffs")]
     //더블 점프 버프
     [SerializeField] private bool _isDoubleJump = false;// 더블 점프 버프 적용 여부.
-    [SerializeField] private float _doubleJumpBuffTime = 5f;// 더블 점프 버프 지속 시간.
+    [SerializeField] private float _doubleJumpBuffTime = 8f;// 더블 점프 버프 지속 시간.
     public bool isDoubleJump
     {
         get => _isDoubleJump;
@@ -41,7 +42,7 @@ public class Player : MonoBehaviour, IDamageable
     }
     //방어 버프
     [SerializeField] private bool _isDefence = false;// 방어 버프 적용 여부.
-    [SerializeField] private float _defenceBuffTime = 5f;// 방어 버프 지속 시간.
+    [SerializeField] private float _defenceBuffTime = 10f;// 방어 버프 지속 시간.
     public bool isDefence
     {
         get => _isDefence;
@@ -53,15 +54,24 @@ public class Player : MonoBehaviour, IDamageable
 
     public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
 
+    private ThirdPersonController _thirdPersonController;
+
+    private void Awake()
+    {
+        _thirdPersonController = GetComponent<ThirdPersonController>();
+    }
+
     private void Update()
     {
         GetComponent<PlayerInput>().enabled = !isDead; // 죽으면 플레이어 입력 비활성화.
-        if (Input.GetKeyDown(KeyCode.G) && _weapon != null) UnEquipWeapon(); // 장착중인 무기 해제.
+        if(Input.GetKeyDown(KeyCode.G) && _weapon != null) UnEquipWeapon(); // 장착중인 무기 해제.
+        _thirdPersonController._DoubleJumpPossible = isDoubleJump;// 더블 점프 버프 적용 여부에 따라 더블 점프 가능 여부 변경.
     }
 
     // 수치 조정
     public void TakeDamage(float damage)// damage 수치 만큼 체력 감소.
     {
+        if (isDefence) return;// 방어 버프가 활성화 되어있으면 데미지를 받지 않음.
         hp -= damage;
         onTakeDamage?.Invoke();// 데미지를 받았을 때 이벤트 발생.
         isDead = hp <= 0;// 체력이 0 이하면 죽음.

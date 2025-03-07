@@ -28,7 +28,6 @@ public class BuffController : MonoBehaviour
         if(player.isDoubleJump)
         {
             Image timer = doubleJumpBuffIcon.transform.GetChild(0).GetComponent<Image>();
-            Debug.Log(timer.name);
             doubleJumpCurrentTime -= Time.deltaTime;
             timer.fillAmount = doubleJumpCurrentTime / doubleJumpBuffTime;// 버프 지속 시간에 따른 타이머 갱신.
         }

@@ -1,4 +1,4 @@
-﻿ using UnityEngine;
+ using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -39,9 +39,12 @@ namespace StarterAssets
         [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
         public float Gravity = -15.0f;
 
+        public bool _DoubleJumpPossible;
+        public int _JumpCount = 0;
+
         [Space(10)]
         [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
-        public float JumpTimeout = 0.50f;
+        public float JumpTimeout = 0.10f;
 
         [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
         public float FallTimeout = 0.15f;
@@ -284,8 +287,11 @@ namespace StarterAssets
             if (Grounded)
             {
                 // reset the fall timeout timer
+                if (_fallTimeoutDelta <= 0.0f)
+                {
+                    _JumpCount = 0;
+                }
                 _fallTimeoutDelta = FallTimeout;
-
                 // update animator if using character
                 if (_hasAnimator)
                 {
@@ -300,11 +306,13 @@ namespace StarterAssets
                 }
 
                 // Jump
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+                if (_input.jump )
                 {
                     // the square root of H * -2 * G = how much velocity needed to reach desired height
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-
+                    Grounded = false;
+                    _JumpCount = 1;
+                    _input.jump = false;
                     // update animator if using character
                     if (_hasAnimator)
                     {
@@ -320,6 +328,24 @@ namespace StarterAssets
             }
             else
             {
+                if(_input.jump&&!_DoubleJumpPossible)
+                {
+                    _input.jump = false;
+                }
+
+                if (_DoubleJumpPossible && _input.jump && _JumpCount == 1)
+                {
+                    _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+                    _JumpCount++;
+                    // update animator if using character
+                    if (_hasAnimator)
+                    {
+                        _animator.SetBool(_animIDJump, true);
+                    }
+                    _input.jump = false;
+                }
+                if(_DoubleJumpPossible && _input.jump && _JumpCount >= 2)
+                    _input.jump = false;
                 // reset the jump timeout timer
                 _jumpTimeoutDelta = JumpTimeout;
 
@@ -337,8 +363,7 @@ namespace StarterAssets
                     }
                 }
 
-                // if we are not grounded, do not jump
-                _input.jump = false;
+                // if we are not grounded, do not jump                
             }
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.065662175, g: 0.26132047, b: 0.72292256, a: 1}
+  m_IndirectSpecularColor: {r: 0.06774096, g: 0.29761273, b: 0.8200566, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -39653,8 +39653,10 @@ MonoBehaviour:
   FootstepAudioVolume: 0.3
   JumpHeight: 1.2
   Gravity: -15
+  _DoubleJumpPossible: 0
+  _JumpCount: 0
   JumpTimeout: 0.3
-  FallTimeout: 0.15
+  FallTimeout: 0.05
   Grounded: 1
   GroundedOffset: -0.14
   GroundedRadius: 0.28
@@ -39725,9 +39727,9 @@ MonoBehaviour:
   _hp: 100
   _attackPower: 1
   _isDoubleJump: 0
-  _doubleJumpBuffTime: 5
+  _doubleJumpBuffTime: 8
   _isDefence: 0
-  _defenceBuffTime: 5
+  _defenceBuffTime: 10
   _weapon: {fileID: 0}
 --- !u!136 &5866666020934683579
 CapsuleCollider:
