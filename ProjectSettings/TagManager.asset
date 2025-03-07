@@ -11,6 +11,7 @@ TagManager:
   - Platform
   - Items
   - BuffItems
+  - Weapon
   layers:
   - Default
   - TransparentFX

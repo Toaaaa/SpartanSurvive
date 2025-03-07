@@ -51,6 +51,7 @@ public class Player : MonoBehaviour, IDamageable
 
         [Header("EquipItem")]
     [SerializeField] private ItemData _weapon;// 장착한 무기
+    [SerializeField] private List<GameObject> weaponInHand;// 손에 배치된 무기
 
     public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
 
@@ -119,12 +120,14 @@ public class Player : MonoBehaviour, IDamageable
             _weapon = w;// 새로운 무기 장착
             EquipmentItme e = w as EquipmentItme;
             attackPower += e.itemValue;// 공격력 증가
+            EquipInHand(e);
         }
         else
         {
             _weapon = w;// 무기 장착
             EquipmentItme e = w as EquipmentItme;
             attackPower += e.itemValue;// 공격력 증가
+            EquipInHand(e);
         }
 
         //Destroy(w.gameObject);// destroy는 레이캐스팅에서 상호작용시 처리하도록 할것.
@@ -136,6 +139,21 @@ public class Player : MonoBehaviour, IDamageable
         EquipmentItme e = _weapon as EquipmentItme;
         attackPower -= e.itemValue;// 공격력 감소
         _weapon = null;
+        for(int i = 0; i < weaponInHand.Count; i++)
+        {
+            weaponInHand[i].SetActive(false);
+        }
+    }
+    private void EquipInHand(EquipmentItme e)
+    {
+        foreach(GameObject g in weaponInHand)
+        {
+            if(g.name == e.itemName)
+            {
+                g.SetActive(true);
+                return;
+            }
+        }
     }
 
     IEnumerator DoubleJumpBuffOff(float time)// 더블 점프 버프 해제

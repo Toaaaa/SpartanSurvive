@@ -11,6 +11,7 @@ public class OnExitAttack : StateMachineBehaviour
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         animator.applyRootMotion = false;
+        animator.ResetTrigger("Attack");
         animator.GetComponent<Player>().isClimbingorAttacking = false;
     }
 }
