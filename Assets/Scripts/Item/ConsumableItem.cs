@@ -7,7 +7,7 @@ public class ConsumableItem : ItemData
 {
     public int healAmount;
 
-    public override void Use()
+    public override void Use(Player player)
     {
         
     }

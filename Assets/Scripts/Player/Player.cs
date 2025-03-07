@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -40,6 +41,8 @@ public class Player : MonoBehaviour, IDamageable
         set => _isDefence = value;
     }
 
+    [Header("EquipItem")]
+    [SerializeField] private ItemData _weapon;// 장착한 무기
 
     public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
 
@@ -48,6 +51,7 @@ public class Player : MonoBehaviour, IDamageable
         GetComponent<PlayerInput>().enabled = !isDead;// 죽으면 플레이어 입력 비활성화.
     }
 
+    // 수치 조정
     public void TakeDamage(float damage)// damage 수치 만큼 체력 감소.
     {
         hp -= damage;
@@ -69,6 +73,8 @@ public class Player : MonoBehaviour, IDamageable
         isDefence = true;
         StartCoroutine(DefenceBuffOff(_defenceBuffTime));
     }
+    
+    // Get
     public float GetMaxHp()
     {
         return maxHp;
@@ -80,6 +86,26 @@ public class Player : MonoBehaviour, IDamageable
     public float GetDefenceBuffTime()
     {
         return _defenceBuffTime;
+    }
+
+    // Set
+    public void EquipWeapon(ItemData w)// 무기 장착
+    {
+        if(_weapon != null)// 이미 무기를 장착 중인 경우
+        {
+            UnEquipWeapon();
+            _weapon = w;// 새로운 무기 장착
+        }
+        else
+            _weapon = w;// 무기 장착
+
+        //Destroy(w.gameObject);// destroy는 레이캐스팅에서 상호작용시 처리하도록 할것.
+
+    }
+    public void UnEquipWeapon()
+    {
+        Instantiate(_weapon.prefab, new Vector3(transform.position.x, 1, transform.position.z), Quaternion.identity);// 무기 프리팹 생성
+        _weapon = null;
     }
 
     IEnumerator DoubleJumpBuffOff(float time)// 더블 점프 버프 해제
