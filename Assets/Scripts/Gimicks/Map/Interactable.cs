@@ -8,4 +8,8 @@ public class Interactable : MonoBehaviour
     {
         Debug.Log("Interact");
     }
+    public string GetInfo()
+    {
+        return name;
+    }
 }

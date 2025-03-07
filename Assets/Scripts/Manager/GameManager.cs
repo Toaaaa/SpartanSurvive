@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
 
 
     public Player player;
+    public CameraRaycaster cameraRaycaster;
 
 
 

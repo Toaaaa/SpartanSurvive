@@ -12,4 +12,8 @@ public abstract class ItemData : ScriptableObject
     public virtual void Use(Player player)// 상호작용으로 사용.
     {
     }
+    public string GetInfo()
+    {
+        return itemName + "\n" + description;
+    }
 }

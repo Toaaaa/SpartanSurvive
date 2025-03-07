@@ -49,7 +49,7 @@ public class Player : MonoBehaviour, IDamageable
     private void Update()
     {
         GetComponent<PlayerInput>().enabled = !isDead; // 죽으면 플레이어 입력 비활성화.
-        if (Input.GetKeyDown(KeyCode.G) || _weapon != null) UnEquipWeapon(); // 장착중인 무기 해제.
+        if (Input.GetKeyDown(KeyCode.G) && _weapon != null) UnEquipWeapon(); // 장착중인 무기 해제.
     }
 
     // 수치 조정
