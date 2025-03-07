@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class CameraRaycaster : MonoBehaviour
 {
@@ -54,6 +55,16 @@ public class CameraRaycaster : MonoBehaviour
                     Destroy(hit.collider.gameObject);
                 }
             }
+            else if (hit.collider.CompareTag("BuffItems"))// 테그가 Enemy인 경우
+            {
+                // UI에 정보 표시
+                objecInfo.text = hit.collider.name;
+            }
+            /*else if (hit.collider.CompareTag("Enemy"))// 테그가 Enemy인 경우
+            {
+                // UI에 정보 표시
+                objecInfo.text = hit.collider.GetComponent<Enemy>().GetInfo();
+            }*/
             else
             {
                 objecInfo.text = "";
