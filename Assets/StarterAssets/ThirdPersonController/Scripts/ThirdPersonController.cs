@@ -1,4 +1,6 @@
- using UnityEngine;
+using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -79,6 +81,8 @@ namespace StarterAssets
         public bool _DoubleJumpPossible;
         public int _JumpCount = 0;
         Player player;
+        [SerializeField] GameObject playerRay;
+        public bool duringClimbEnd = false;
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -112,6 +116,7 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
+        private LadderClimb _ladderClimb;
 
         private const float _threshold = 0.01f;
 
@@ -149,6 +154,7 @@ namespace StarterAssets
             _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM 
             _playerInput = GetComponent<PlayerInput>();
+            _ladderClimb = GetComponent<LadderClimb>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
@@ -165,6 +171,7 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
             if (!player.IsDead)// 죽었을때는 행동을 하지 못함.
             {
+                PlayerClimbRaycast();
                 JumpAndGravity();
                 GroundedCheck();
                 Move();
@@ -190,6 +197,13 @@ namespace StarterAssets
 
         private void GroundedCheck()
         {
+            if(player.isClimbing)// 사다리를 타고 있으면 땅에 있음.
+            {
+                Grounded = false;
+                _animator.SetBool(_animIDGrounded, Grounded);
+                return;
+            }
+            _animator.speed = 1;// 사다리를 타는중이 아닐땐 애니메이션 속도 1로 고정.
             // set sphere position, with offset
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
                 transform.position.z);
@@ -226,7 +240,12 @@ namespace StarterAssets
 
         private void Move()
         {
-            if (player.isClimbingorAttacking) return;// 공격중이거나 벽타기중이면 움직이지 않음.
+            if (player.isAttacking || duringClimbEnd) return;// 공격중 or 오르기를 마무리 하는 중이면 움직이지 않음.
+            if (player.isClimbing)
+            {
+                ClimbMove();
+                return;// 사다리를 오르는 중이면 다른 움직임 Input 받지 않음.
+            }
 
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
@@ -281,7 +300,6 @@ namespace StarterAssets
 
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
             // move the player
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
@@ -340,7 +358,7 @@ namespace StarterAssets
             }
             else
             {
-                if(_input.jump&&!_DoubleJumpPossible)
+                if(_input.jump&&!_DoubleJumpPossible&&!player.isClimbing)
                 {
                     _input.jump = false;
                 }
@@ -369,7 +387,7 @@ namespace StarterAssets
                 else
                 {
                     // update animator if using character
-                    if (_hasAnimator)
+                    if (_hasAnimator&&!player.isClimbing)
                     {
                         _animator.SetBool(_animIDFreeFall, true);
                     }
@@ -391,7 +409,7 @@ namespace StarterAssets
                 if (_hasAnimator)
                 {
                     _animator.SetTrigger(_animIDAttack);
-                    player.isClimbingorAttacking = true;
+                    player.isAttacking = true;
                     _input.attack = false;
                 }
             }
@@ -400,15 +418,120 @@ namespace StarterAssets
                 _input.attack = false;
             }
         }
-        private void Climb()
-        {
-            if(_hasAnimator)
+        private void Climb(Vector3 hitpoint)// 사다리 오르는 상태로 전환
+        {            
+            if(player.isClimbing)// 타고있는 중
             {
-                _animator.SetTrigger(_animClimb);
-                player.isClimbingorAttacking = true;
+                _animator.SetBool(_animClimb, true);
+                //타고있는 도중에는 항상 z축 거리를 일정하게(레이캐스팅 거리인 0.5보다 낮게) 유지.
+                Vector3 playerPos = playerRay.transform.position;
+                Vector3 targetPos = new Vector3(hitpoint.x, playerPos.y, hitpoint.z); // 높이는 유지한 채 XZ만 적용
+
+                float distance = Vector3.Distance(new Vector3(playerPos.x, 0, playerPos.z), new Vector3(hitpoint.x, 0, hitpoint.z));
+                // 거리가 일정거리 이상이면 이동 보정
+                if (distance > 0.3f)
+                {
+                    transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 5f);
+                }
+                if (_input.climb)// 타는 도중 탈출을 누르면 상태 해제.
+                {
+                    _animator.SetBool(_animClimb, false);
+                    player.isClimbing = false;
+                    _input.jump = false;
+                    _input.climb = false;
+                }
+            }
+
+            if (_hasAnimator && _input.climb)
+            {
+                _ladderClimb.LookAtLadder();// 사다리를 바라보게함.
+                _animator.SetBool(_animClimb, true);
+                player.isClimbing = true;
+                _input.climb = false;
+            }
+        }
+        private void ClimbMove()
+        {
+            float climbSpeed = 2.0f; // 원하는 속도로 변경 가능
+            float horizontalClimbSpeed = 1.5f; // 원하는 속도로 변경 가능
+
+            // 위로 이동하는 입력 처리
+            float climbVirDirection = _input.move.y; // ↑ : 1, ↓ : -1
+            float climbHorDirection = _input.move.x; // → : 1, ← : -1
+
+            if(climbVirDirection == 0 && climbHorDirection == 0)
+            {
+                _animator.speed = 0;
+            }
+            else
+            {
+                _animator.speed = 1;
+            }
+
+            // 수직 이동 벡터
+            Vector3 verticalMove = Vector3.up * climbVirDirection * climbSpeed * Time.deltaTime;
+            // 현재 사다리의 오른쪽 방향 계산
+            Vector3 ladderRight = _ladderClimb.transform.right; // 사다리의 오른쪽 방향 벡터
+
+            // 좌우 이동 벡터 계산 (사다리의 오른쪽 방향 기준)
+            Vector3 horizontalMove = ladderRight * climbHorDirection * horizontalClimbSpeed * Time.deltaTime;
+
+             Vector3 moveDirection = verticalMove + horizontalMove;
+            _controller.Move(moveDirection);
+
+            // 애니메이션 적용
+            if (_hasAnimator)
+            {
+                _animator.SetFloat(_animIDSpeed, Mathf.Abs(climbVirDirection)); // 위/아래 움직임 반영
             }
         }
 
+        void PlayerClimbRaycast()
+        {
+            Ray ray = new Ray(playerRay.transform.position, playerRay.transform.forward);
+            RaycastHit hit;
+            if(Physics.Raycast(ray, out hit, 0.2f))
+            {
+                if (hit.collider.CompareTag("Climbable"))
+                {
+                    _ladderClimb.SetLadderRotation(hit.collider.gameObject);
+                    Climb(hit.point);
+                }
+                else
+                {
+                    _input.climb = false;
+                    _animator.SetBool(_animClimb, false);
+                }
+            }
+        }
+        void OnTriggerEnter(Collider c)
+        {
+            if(c.gameObject.CompareTag("ClimbEnd"))
+            {
+                _input.climb = false;
+                player.isClimbing = false;
+                _animator.SetBool(_animClimb, false);
+            }
+        }
+
+        IEnumerator SmoothClimbEndMove()
+        {
+            float duration = 0.8f; // 이동하는 시간
+            float elapsedTime = 0f;
+
+            Vector3 startPosition = transform.position;
+            Vector3 targetPosition = startPosition + Vector3.forward * 1f + Vector3.up * 1f;
+
+            while (elapsedTime < duration)
+            {
+                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            // 최종 위치 보정
+            transform.position = targetPosition;
+        }
 
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {

@@ -57,7 +57,8 @@ public class Player : MonoBehaviour, IDamageable
 
     private ThirdPersonController _thirdPersonController;
     private Animator _animator;
-    public bool isClimbingorAttacking = false;
+    public bool isAttacking = false;
+    public bool isClimbing = false;
 
     private void Awake()
     {

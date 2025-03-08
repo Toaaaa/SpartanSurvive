@@ -12,6 +12,8 @@ TagManager:
   - Items
   - BuffItems
   - Weapon
+  - Climbable
+  - ClimbEnd
   layers:
   - Default
   - TransparentFX
