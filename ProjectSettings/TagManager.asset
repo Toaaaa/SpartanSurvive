@@ -18,6 +18,7 @@ TagManager:
   - AttackBox
   - MovingPlatform
   - JumpPad
+  - LaunchObject
   layers:
   - Default
   - TransparentFX

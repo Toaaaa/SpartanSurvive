@@ -56,6 +56,7 @@ public class Player : MonoBehaviour, IDamageable
     public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
 
     private ThirdPersonController _thirdPersonController;
+    private CharacterController _characterController;
     private Animator _animator;
     public bool isAttacking = false;
     public int attackCount = 0;// 최초피격 공격판정 및 횟수 조절 변수.
@@ -64,6 +65,7 @@ public class Player : MonoBehaviour, IDamageable
     private void Awake()
     {
         _thirdPersonController = GetComponent<ThirdPersonController>();
+        _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
     }
 
@@ -179,6 +181,23 @@ public class Player : MonoBehaviour, IDamageable
     private Transform platformTransform;
     private Vector3 lastPlatformPosition;
 
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Physics")) // 물리 판정 오브젝트 일 경우 충돌 전 trigger로 미리 선 처리 하기.
+        {
+            StartCoroutine(PhysicsControll());
+        }
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("LaunchObject"))
+        {
+            Vector3 collisionDirection = collision.gameObject.GetComponent<PhysicsObjects>().dir; // 충돌 방향 가져오기.
+            Rigidbody rb = GetComponent<Rigidbody>();
+            rb.AddForce(collisionDirection * 10, ForceMode.Impulse);
+        }
+    }
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("MovingPlatform"))
@@ -205,6 +224,16 @@ public class Player : MonoBehaviour, IDamageable
     {
         yield return new WaitForSeconds(time);
         isDefence = false;
+    }
+    IEnumerator PhysicsControll()
+    {
+        CharacterConController ccc = GetComponent<CharacterConController>();
+        Rigidbody rb = GetComponent<Rigidbody>();
+        ccc.isLaunch = true;
+        _characterController.enabled = false;
+        yield return new WaitForSeconds(1.5f);
+        ccc.isLaunch = false;
+        _characterController.enabled = true;
     }
 
 }

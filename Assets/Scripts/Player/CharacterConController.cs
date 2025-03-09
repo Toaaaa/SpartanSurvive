@@ -6,6 +6,7 @@ public class CharacterConController : MonoBehaviour
 {
     CharacterController cc;
     Coroutine coroutine;
+    public bool isLaunch = false; // 물리 판정 오브젝트와 충돌하였을때.
 
     private void Awake()
     {
@@ -20,6 +21,7 @@ public class CharacterConController : MonoBehaviour
         }
         if(collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Platform") // 땅/플랫폼 과 충돌시 즉시 cc활성화 
         {
+            if (isLaunch) return; // 물리 판정 오브젝트와 충돌하였을때는 리턴
             foreach(ContactPoint contact in collision.contacts) // 충돌한 지점을 모두 가져옴
             {
                 if (Vector3.Dot(contact.normal, Vector3.up) > 0.7f) // 충돌한 지점의 법선벡터가 위쪽이라면 
@@ -34,14 +36,14 @@ public class CharacterConController : MonoBehaviour
     }
     private void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.tag == "Physics") // 물리 판정이 있는 오브젝트와 충돌중일때
+        if (collision.gameObject.tag == "Physics" || collision.gameObject.tag == "LaunchObject") // 물리 판정이 있는 오브젝트와 충돌중일때
         {
             cc.enabled = false; // 캐릭터 컨트롤러 비활성화
         }
     }
     private void OnCollisionExit(Collision collision)
     {
-        if(collision.gameObject.tag == "Physics") // 물리 판정이 있는 오브젝트와 충돌이 끝났을때
+        if(collision.gameObject.tag == "Physics" ) // 물리 판정이 있는 오브젝트와 충돌이 끝났을때
         {
             PhysicsObject po = collision.gameObject.GetComponent<PhysicsObject>(); // 충돌한 오브젝트의 PhysicsObject 컴포넌트를 가져옴
 
