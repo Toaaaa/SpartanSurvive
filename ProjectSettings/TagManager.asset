@@ -14,6 +14,8 @@ TagManager:
   - Weapon
   - Climbable
   - ClimbEnd
+  - Monster
+  - AttackBox
   layers:
   - Default
   - TransparentFX
