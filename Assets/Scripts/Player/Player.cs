@@ -75,6 +75,18 @@ public class Player : MonoBehaviour, IDamageable
         _thirdPersonController._DoubleJumpPossible = isDoubleJump;// 더블 점프 버프 적용 여부에 따라 더블 점프 가능 여부 변경.
         _animator.SetBool("HasWeapon", !_weapon.IsUnityNull());// 무기 장착 여부에 따라 애니메이션 변경.
     }
+    private void FixedUpdate()
+    {
+        if (platformTransform != null)
+        {
+            // 플랫폼의 이동량을 계산하여 플레이어 위치 업데이트
+            Vector3 platformMovement = platformTransform.position - lastPlatformPosition;
+            transform.position += platformMovement;
+
+            // 다음 프레임을 위해 플랫폼 위치 저장
+            lastPlatformPosition = platformTransform.position;
+        }
+    }
 
     // 수치 조정
     public void TakeDamage(float damage)// damage 수치 만큼 체력 감소.
@@ -163,6 +175,27 @@ public class Player : MonoBehaviour, IDamageable
         }
     }
 
+    // 플렛폼 이동 관련
+    private Transform platformTransform;
+    private Vector3 lastPlatformPosition;
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("MovingPlatform"))
+        {
+            platformTransform = collision.transform;
+            lastPlatformPosition = platformTransform.position;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("MovingPlatform"))
+        {
+            platformTransform = null;
+        }
+    }
+
+    // 코루틴
     IEnumerator DoubleJumpBuffOff(float time)// 더블 점프 버프 해제
     {
         yield return new WaitForSeconds(time);

@@ -141,7 +141,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buffType: 0
-  description: 
 --- !u!1 &5416395842008456742
 GameObject:
   m_ObjectHideFlags: 0
