@@ -58,6 +58,7 @@ public class Player : MonoBehaviour, IDamageable
     private ThirdPersonController _thirdPersonController;
     private Animator _animator;
     public bool isAttacking = false;
+    public int attackCount = 0;// 최초피격 공격판정 및 횟수 조절 변수.
     public bool isClimbing = false;
 
     private void Awake()
@@ -82,6 +83,10 @@ public class Player : MonoBehaviour, IDamageable
         hp -= damage;
         onTakeDamage?.Invoke();// 데미지를 받았을 때 이벤트 발생.
         isDead = hp <= 0;// 체력이 0 이하면 죽음.
+    }
+    public float GetDamage()// 공격력 반환
+    {
+        return attackPower;
     }
     public void Heal(float heal)// heal 수치 만큼 체력 회복
     {

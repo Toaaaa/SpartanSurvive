@@ -410,6 +410,7 @@ namespace StarterAssets
                 {
                     _animator.SetTrigger(_animIDAttack);
                     player.isAttacking = true;
+                    player.attackCount = 1;// 최초 피격 공격판정 활성화.
                     _input.attack = false;
                 }
             }
