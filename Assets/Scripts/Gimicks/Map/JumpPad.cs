@@ -9,8 +9,8 @@ public class JumpPad : PhysicsObject
         if (collision.gameObject.tag == "Player")
         {
             Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
-            Vector3 dir = Quaternion.Euler(10, 0, 0) * Vector3.up;// 100도 각도로 발사
-            rb.AddForce(dir * 15, ForceMode.Impulse);
+            Vector3 dir = Quaternion.Euler(8, 0, 0) * Vector3.up;// 위로 향하는 벡터를 8도 회전
+            rb.AddForce(dir * 13, ForceMode.Impulse);
         }
     }
 }

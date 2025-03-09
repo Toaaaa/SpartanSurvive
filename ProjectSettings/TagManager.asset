@@ -17,6 +17,7 @@ TagManager:
   - Monster
   - AttackBox
   - MovingPlatform
+  - JumpPad
   layers:
   - Default
   - TransparentFX
