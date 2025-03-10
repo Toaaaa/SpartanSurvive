@@ -404,19 +404,27 @@ namespace StarterAssets
         }
         private void Attack()
         {
-            if (_input.attack&&!player.isAttacking&&Grounded)
+            if (_input.attack && _hasAnimator)
             {
-                if (_hasAnimator)
+                if(Grounded)
                 {
-                    _animator.SetTrigger(_animIDAttack);
-                    player.isAttacking = true;
-                    player.attackCount = 1;// 최초 피격 공격판정 활성화.
+                    if (player.isAttacking)
+                    {
+                        _animator.ResetTrigger(_animIDAttack);
+                        _input.attack = false;
+                    }
+                    else
+                    {
+                        _animator.SetTrigger(_animIDAttack);
+                        player.isAttacking = true;
+                        player.attackCount = 1;// 최초 피격 공격판정 활성화.
+                        _input.attack = false;
+                    }
+                }
+                else
+                {
                     _input.attack = false;
                 }
-            }
-            if(_input.attack &&!Grounded)
-            {
-                _input.attack = false;
             }
         }
         private void Climb(Vector3 hitpoint)// 사다리 오르는 상태로 전환
