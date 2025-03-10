@@ -54,6 +54,7 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private List<GameObject> weaponInHand;// 손에 배치된 무기
 
     public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
+    public event Action<int> onStartFX;// 버프 이펙트 시작 이벤트 발생.
 
     private ThirdPersonController _thirdPersonController;
     private CharacterController _characterController;
@@ -105,16 +106,19 @@ public class Player : MonoBehaviour, IDamageable
     public void Heal(float heal)// heal 수치 만큼 체력 회복
     {
         hp += heal;
+        onStartFX(0);// 체력 회복 이펙트 시작
         if(hp >= maxHp) hp = maxHp;
     }
     public void DoubleJumpBuffOn()// 더블 점프 버프 적용
     {
         isDoubleJump = true;
+        onStartFX(2);// 더블 점프 버프 이펙트 시작
         StartCoroutine(DoubleJumpBuffOff(_doubleJumpBuffTime));
     }
     public void DefenceBuffOn()// 방어 버프 적용
     {
         isDefence = true;
+        onStartFX(1);// 방어 버프 이펙트 시작
         StartCoroutine(DefenceBuffOff(_defenceBuffTime));
     }
     
