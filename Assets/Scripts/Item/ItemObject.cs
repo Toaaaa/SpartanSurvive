@@ -6,11 +6,12 @@ using DG.Tweening;
 public class ItemObject : MonoBehaviour
 {
     public ItemData itemData;// 해당 아이템 게임 오브젝트의 아이템 데이터.
-    public float yoyoY = 1.2f;
+    public float yoyoY;
 
     private void Start()
     {
         UpdownMove();
+        yoyoY = transform.position.y + 0.2f;
     }
 
     void UpdownMove()
