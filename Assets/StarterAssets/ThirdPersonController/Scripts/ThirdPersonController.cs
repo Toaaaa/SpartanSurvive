@@ -436,6 +436,7 @@ namespace StarterAssets
                 }
                 if (_input.climb)// 타는 도중 탈출을 누르면 상태 해제.
                 {
+                    Debug.Log("탈출");
                     _animator.SetBool(_animClimb, false);
                     player.isClimbing = false;
                     _input.jump = false;

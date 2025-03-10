@@ -237,7 +237,6 @@ public class Player : MonoBehaviour, IDamageable
         _characterController.enabled = false;
         yield return new WaitForSeconds(1.5f);
         ccc.isLaunch = false;
-        _characterController.enabled = true;
     }
 
 }

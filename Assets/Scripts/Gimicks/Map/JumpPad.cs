@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class JumpPad : PhysicsObject
 {
-    private void OnCollisionEnter(Collision collision)
+    public float angle;
+    public float force;
+
+    private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.tag == "Player")
         {
             Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
-            Vector3 dir = Quaternion.Euler(10, 0, 0) * Vector3.up;// 위로 향하는 벡터를 8도 회전
-            rb.AddForce(dir * 15, ForceMode.Impulse);
+            Vector3 dir = Quaternion.Euler(angle, 0, 0) * Vector3.up;// 위로 향하는 벡터를  회전
+            rb.velocity = Vector3.zero;
+            rb.AddForce(dir * force, ForceMode.Impulse);
         }
     }
 }
