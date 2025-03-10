@@ -9,6 +9,7 @@ public class ConsumableItem : ItemData
 
     public override void Use(Player player)
     {
+        AudioManager.instance.PlaySFX(0);// 힐 사운드 재생
         player.Heal(healAmount);
     }
 }

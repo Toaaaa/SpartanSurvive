@@ -16,6 +16,7 @@ public class EquipmentItme : ItemData
 
     public override void Use(Player player)
     {
+        AudioManager.instance.PlaySFX(1);// 장비 상호작용 사운드 재생
         player.EquipWeapon(this);
     }
 }

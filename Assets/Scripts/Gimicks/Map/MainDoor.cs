@@ -18,6 +18,7 @@ public class MainDoor : Interactable
     public void OpenDoor()
     {
         if (isAction) return;
+        AudioManager.instance.PlaySFX(2);// 문 사운드 재생
         if (isOpen)
         {
             StartCoroutine(MoveDoor(startAngle));// 문을 닫는다.(-90 도)
