@@ -404,7 +404,7 @@ namespace StarterAssets
         }
         private void Attack()
         {
-            if (_input.attack&&Grounded)
+            if (_input.attack&&!player.isAttacking&&Grounded)
             {
                 if (_hasAnimator)
                 {

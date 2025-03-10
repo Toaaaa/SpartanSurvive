@@ -56,6 +56,7 @@ public class Player : MonoBehaviour, IDamageable
     public event Action onTakeDamage;// 데미지를 받았을 때 이벤트 발생.
     public event Action<int> onStartFX;// 버프 이펙트 시작 이벤트 발생.
 
+        [Header("PlayerControlls")]
     private ThirdPersonController _thirdPersonController;
     private CharacterController _characterController;
     private Animator _animator;
